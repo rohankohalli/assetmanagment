@@ -4,16 +4,20 @@ import assestRoutes from './routes/asset.routes.js'
 import staffRoutes from './routes/staff.routes.js'
 import assestAssignmentRoutes from './routes/assest-assingnment.routes.js'
 import userRoutes from './routes/user.routes.js'
+import './models/association.js'
+import cors from 'cors'
+import { verifyToken } from './middleware/auth.js'
 
 const app = express()
 const port = process.env.PORT || 8080
 
+app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-app.use("/api/assets", assestRoutes)
-app.use("/api/staff", staffRoutes)
-app.use("/api/assigned-assets", assestAssignmentRoutes)
+app.use("/api/assets", verifyToken, assestRoutes)
+app.use("/api/staff", verifyToken, staffRoutes)
+app.use("/api/assigned-assets", verifyToken, assestAssignmentRoutes)
 app.use("/api/users", userRoutes)
 
 const startServer = async () => {
@@ -29,4 +33,5 @@ const startServer = async () => {
 }
 
 startServer()
+
 export default app
