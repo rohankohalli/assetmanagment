@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize"
-import sequelize from "../config/dbconfig"
+import sequelize from "../config/dbconfig.js"
 
 const Asset = sequelize.define("asset", {
     id: {

@@ -1,6 +1,6 @@
 import express from "express"
-import { createAsset, deleteAsset, exportAssetsCsv, getAssetById, getAssets, updateAsset } from "../controller/Asset.Controller"
-import { validateCreateAsset, validateUpdateAsset } from "../validation/ValidateAssest"
+import { createAsset, deleteAsset, exportAssetsCsv, getAssetById, getAssets, updateAsset } from "../controller/Asset.Controller.js"
+import { validateCreateAsset, validateUpdateAsset } from "../validation/ValidateAssest.js"
 
 const router = express.Router()
 
