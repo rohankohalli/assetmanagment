@@ -1,3 +1,6 @@
+import { DataTypes } from "sequelize"
+import sequelize from "../config/dbconfig"
+
 const AssetAssignment = sequelize.define("asset_assignment", {
     staff_id: {
         type: DataTypes.INTEGER,
@@ -11,7 +14,7 @@ const AssetAssignment = sequelize.define("asset_assignment", {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: "staff",
+            model: "asset",
             key: "id"
         }
     },
