@@ -83,7 +83,7 @@ export default function Login() {
 
                     <div className="pt-3 border-t border-slate-100 text-center">
                         <p className="text-[11px] text-slate-400">
-                            Default Admin: <span className="font-mono text-slate-600 font-semibold">admin@harvest.in</span> / <span className="font-mono text-slate-600 font-semibold">admin123</span>
+                            Default Admin: <span className="font-mono text-slate-600 font-semibold">admin@harvest.in</span> / <span className="font-mono text-slate-600 font-semibold">Test@123</span>
                         </p>
                     </div>
                 </form>

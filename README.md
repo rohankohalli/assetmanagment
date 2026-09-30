@@ -99,7 +99,7 @@ assetmanagment/
    ```bash
    npm run dev
    ```
-   *The server will automatically connect and synchronize database tables.*
+   *The server will automatically connect, synchronize database tables, and seed the default admin account (`admin@harvest.in` / `Test@123`).*
 
 ### 2. Frontend Setup
 

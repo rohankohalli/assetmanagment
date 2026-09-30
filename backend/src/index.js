@@ -7,6 +7,7 @@ import userRoutes from './routes/user.routes.js'
 import './models/association.js'
 import cors from 'cors'
 import { verifyToken } from './middleware/auth.js'
+import { seedDefaultAdmin } from './utils/seedAdmin.js'
 
 const app = express()
 const port = process.env.PORT || 8080
@@ -25,6 +26,7 @@ const startServer = async () => {
         await sequelize.authenticate()
         console.log("Connected to Database")
         await sequelize.sync()
+        await seedDefaultAdmin()
 
         app.listen(port, () => { console.log(`Server listening on port:${port}`) })
     } catch (err) {
