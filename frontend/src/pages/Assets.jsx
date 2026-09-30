@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { api } from '../api/client.js'
 import StatusBadge from '../components/StatusBadge.jsx'
@@ -18,25 +18,25 @@ export default function Assets() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        fetchAssets()
-    }, [statusFilter, typeFilter, search])
+        let isMounted = true
+        const fetchAssets = async () => {
+            try {
+                const query = new URLSearchParams()
+                if (statusFilter !== 'All') query.append('status', statusFilter)
+                if (typeFilter !== 'All') query.append('type', typeFilter)
+                if (search.trim()) query.append('search', search.trim())
 
-    const fetchAssets = async () => {
-        try {
-            setLoading(true)
-            const query = new URLSearchParams()
-            if (statusFilter !== 'All') query.append('status', statusFilter)
-            if (typeFilter !== 'All') query.append('type', typeFilter)
-            if (search.trim()) query.append('search', search.trim())
-
-            const data = await api(`/assets?${query.toString()}`)
-            setAssets(data)
-        } catch (err) {
-            toast.error(err.message)
-        } finally {
-            setLoading(false)
+                const data = await api(`/assets?${query.toString()}`)
+                if (isMounted) setAssets(data)
+            } catch (err) {
+                toast.error(err.message)
+            } finally {
+                if (isMounted) setLoading(false)
+            }
         }
-    }
+        fetchAssets()
+        return () => { isMounted = false }
+    }, [statusFilter, typeFilter, search])
 
     const exportToCSV = async () => {
         try {
@@ -70,7 +70,6 @@ export default function Assets() {
                 </Button>
             </PageHeader>
 
-            {/* Filter Bar */}
             <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
                 <div className="flex flex-col md:flex-row gap-3">
                     <div className="flex-1">
@@ -113,7 +112,6 @@ export default function Assets() {
                 </div>
             </div>
 
-            {/* Inventory Table */}
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm text-slate-600">

@@ -11,13 +11,9 @@ export default function Dashboard() {
     const [recentAssignments, setRecentAssignments] = useState([])
     const [loading, setLoading] = useState(true)
 
-    useEffect(() => {
-        loadDashboardData()
-    }, [])
-
+    // Function declared BEFORE useEffect
     const loadDashboardData = async () => {
         try {
-            setLoading(true)
             const [assets, assignments] = await Promise.all([
                 api('/assets'),
                 api('/assigned-assets')
@@ -37,6 +33,10 @@ export default function Dashboard() {
         }
     }
 
+    useEffect(() => {
+        loadDashboardData()
+    }, [])
+
     return (
         <div className="space-y-6">
             <PageHeader title="IT Asset Overview" description="Live hardware inventory and staff assignment status">
@@ -48,12 +48,11 @@ export default function Dashboard() {
                 </Button>
             </PageHeader>
 
-            {/* 4 KPI Summary Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
                         <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Assets</p>
-                        <p className="text-3xl font-extrabold text-[#1B3C73] mt-1">{stats.total}</p>
+                        <p className="text-3xl font-extrabold text-[#1B3C73] mt-1">{loading ? '...' : stats.total}</p>
                     </div>
                     <div className="p-3 bg-blue-50 text-[#1B3C73] rounded-lg">
                         <Laptop className="w-6 h-6" />
@@ -63,7 +62,7 @@ export default function Dashboard() {
                 <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
                         <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Available</p>
-                        <p className="text-3xl font-extrabold text-emerald-600 mt-1">{stats.available}</p>
+                        <p className="text-3xl font-extrabold text-emerald-600 mt-1">{loading ? '...' : stats.available}</p>
                     </div>
                     <div className="p-3 bg-emerald-50 text-emerald-600 rounded-lg">
                         <CheckCircle2 className="w-6 h-6" />
@@ -73,7 +72,7 @@ export default function Dashboard() {
                 <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
                         <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Assigned</p>
-                        <p className="text-3xl font-extrabold text-blue-600 mt-1">{stats.assigned}</p>
+                        <p className="text-3xl font-extrabold text-blue-600 mt-1">{loading ? '...' : stats.assigned}</p>
                     </div>
                     <div className="p-3 bg-blue-50 text-blue-600 rounded-lg">
                         <UserCheck className="w-6 h-6" />
@@ -83,7 +82,7 @@ export default function Dashboard() {
                 <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
                         <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Under Repair</p>
-                        <p className="text-3xl font-extrabold text-amber-600 mt-1">{stats.repair}</p>
+                        <p className="text-3xl font-extrabold text-amber-600 mt-1">{loading ? '...' : stats.repair}</p>
                     </div>
                     <div className="p-3 bg-amber-50 text-amber-600 rounded-lg">
                         <Wrench className="w-6 h-6" />
@@ -91,7 +90,6 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            {/* Recent Assignments Table */}
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                 <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                     <h2 className="font-bold text-slate-900 text-sm">Recent Assignment Activity</h2>

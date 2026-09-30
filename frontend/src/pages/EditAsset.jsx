@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { api } from '../api/client.js'
 import Button from '../components/Button.jsx'
@@ -18,13 +18,8 @@ export default function EditAsset() {
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
 
-    useEffect(() => {
-        loadAsset()
-    }, [id])
-
-    const loadAsset = async () => {
+    const loadAsset = useCallback(async () => {
         try {
-            setLoading(true)
             const data = await api(`/assets/${id}`)
             setName(data.name)
             setType(data.type)
@@ -36,7 +31,11 @@ export default function EditAsset() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [id])
+
+    useEffect(() => {
+        loadAsset()
+    }, [loadAsset])
 
     const handleSubmit = async (e) => {
         e.preventDefault()

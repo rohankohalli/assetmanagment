@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { api } from '../api/client.js'
 import StatusBadge from '../components/StatusBadge.jsx'
@@ -15,13 +15,9 @@ export default function AssetDetail() {
     const [returnStatus, setReturnStatus] = useState('available')
     const [submitting, setSubmitting] = useState(false)
 
-    useEffect(() => {
-        loadAsset()
-    }, [id])
-
-    const loadAsset = async () => {
+    // Declared BEFORE useEffect using useCallback
+    const loadAsset = useCallback(async () => {
         try {
-            setLoading(true)
             const data = await api(`/assets/${id}`)
             setAsset(data)
         } catch (err) {
@@ -29,7 +25,11 @@ export default function AssetDetail() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [id])
+
+    useEffect(() => {
+        loadAsset()
+    }, [loadAsset])
 
     const handleReturn = async () => {
         try {
@@ -61,7 +61,6 @@ export default function AssetDetail() {
                 <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to Assets Inventory
             </button>
 
-            {/* Asset Header Card */}
             <div className="bg-white p-6 rounded-xl border border-slate-200/90 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex items-start gap-4">
                     <div className="p-3.5 bg-blue-50 text-[#1B3C73] rounded-xl border border-blue-100 flex-shrink-0">
@@ -87,7 +86,6 @@ export default function AssetDetail() {
                 </Button>
             </div>
 
-            {/* Current Custody Card */}
             {activeAssignment ? (
                 <div className="bg-gradient-to-r from-blue-50/70 to-indigo-50/40 p-6 rounded-xl border border-blue-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-start gap-3.5">
@@ -136,7 +134,6 @@ export default function AssetDetail() {
                 </div>
             )}
 
-            {/* Audit Timeline */}
             <div className="bg-white rounded-xl border border-slate-200/90 shadow-sm overflow-hidden">
                 <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -188,7 +185,6 @@ export default function AssetDetail() {
                 </div>
             </div>
 
-            {/* Local Return Modal */}
             {returnModal && (
                 <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-xl max-w-sm w-full p-6 space-y-4 shadow-xl border border-slate-100">
