@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { api } from '../api/client.js'
 import Button from '../components/Button.jsx'
@@ -11,21 +11,23 @@ export default function StaffDetail() {
     const [staff, setStaff] = useState(null)
     const [loading, setLoading] = useState(true)
 
-    const loadStaff = useCallback(async () => {
-        try {
-            setLoading(true)
-            const data = await api(`/staff/${id}`)
-            setStaff(data)
-        } catch (err) {
-            toast.error(err.message)
-        } finally {
-            setLoading(false)
-        }
-    }, [id])
 
     useEffect(() => {
-        loadStaff()
-    }, [loadStaff])
+        let isMounted = true
+        api(`/staff/${id}`)
+            .then((data) => {
+                if (isMounted) setStaff(data)
+            })
+            .catch((err) => {
+                if (isMounted) toast.error(err.message)
+            })
+            .finally(() => {
+                if (isMounted) setLoading(false)
+            })
+        return () => {
+            isMounted = false
+        }
+    }, [id])
 
     if (loading) return <div className="p-12 text-center text-slate-500 font-medium">Loading staff profile...</div>
     if (!staff) return <div className="p-12 text-center text-red-600 font-medium">Staff member not found.</div>

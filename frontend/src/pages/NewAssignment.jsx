@@ -15,27 +15,26 @@ export default function NewAssignment() {
     const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
 
-    const loadDropdownData = async () => {
-        try {
-            setLoading(true)
-            const [assets, staff] = await Promise.all([
-                api('/assets?status=available'),
-                api('/staff')
-            ])
-            setAvailableAssets(assets)
-            setStaffList(staff)
-
-            if (assets.length > 0) setSelectedAsset(assets[0].id)
-            if (staff.length > 0) setSelectedStaff(staff[0].id)
-        } catch (err) {
-            toast.error(err.message)
-        } finally {
-            setLoading(false)
-        }
-    }
 
     useEffect(() => {
-        loadDropdownData()
+        let isMounted = true
+        Promise.all([api('/assets?status=available'), api('/staff')])
+            .then(([assets, staff]) => {
+                if (!isMounted) return
+                setAvailableAssets(assets)
+                setStaffList(staff)
+                if (assets.length > 0) setSelectedAsset(assets[0].id)
+                if (staff.length > 0) setSelectedStaff(staff[0].id)
+            })
+            .catch((err) => {
+                if (isMounted) toast.error(err.message)
+            })
+            .finally(() => {
+                if (isMounted) setLoading(false)
+            })
+        return () => {
+            isMounted = false
+        }
     }, [])
 
     const handleSubmit = async (e) => {

@@ -11,20 +11,22 @@ export default function Staff() {
     const [staffList, setStaffList] = useState([])
     const [loading, setLoading] = useState(true)
 
-    const fetchStaff = async () => {
-        try {
-            setLoading(true)
-            const data = await api('/staff')
-            setStaffList(data)
-        } catch (err) {
-            toast.error(err.message)
-        } finally {
-            setLoading(false)
-        }
-    }
 
     useEffect(() => {
-        fetchStaff()
+        let isMounted = true
+        api('/staff')
+            .then((data) => {
+                if (isMounted) setStaffList(data)
+            })
+            .catch((err) => {
+                if (isMounted) toast.error(err.message)
+            })
+            .finally(() => {
+                if (isMounted) setLoading(false)
+            })
+        return () => {
+            isMounted = false
+        }
     }, [])
 
     return (

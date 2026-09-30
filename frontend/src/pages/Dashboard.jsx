@@ -11,30 +11,31 @@ export default function Dashboard() {
     const [recentAssignments, setRecentAssignments] = useState([])
     const [loading, setLoading] = useState(true)
 
-    // Function declared BEFORE useEffect
-    const loadDashboardData = async () => {
-        try {
-            const [assets, assignments] = await Promise.all([
-                api('/assets'),
-                api('/assigned-assets')
-            ])
-
-            const total = assets.length
-            const available = assets.filter(a => a.status === 'available').length
-            const assigned = assets.filter(a => a.status === 'assigned').length
-            const repair = assets.filter(a => a.status === 'under_repair' || a.status === 'maintenance').length
-
-            setStats({ total, available, assigned, repair })
-            setRecentAssignments(assignments.slice(0, 5))
-        } catch (err) {
-            console.error(err)
-        } finally {
-            setLoading(false)
-        }
-    }
 
     useEffect(() => {
-        loadDashboardData()
+        let isMounted = true
+        Promise.all([api('/assets'), api('/assigned-assets')])
+            .then(([assets, assignments]) => {
+                if (!isMounted) return
+                const total = assets.length
+                const available = assets.filter((a) => a.status === 'available').length
+                const assigned = assets.filter((a) => a.status === 'assigned').length
+                const repair = assets.filter(
+                    (a) => a.status === 'under_repair' || a.status === 'maintenance'
+                ).length
+
+                setStats({ total, available, assigned, repair })
+                setRecentAssignments(assignments.slice(0, 5))
+            })
+            .catch((err) => {
+                console.error(err)
+            })
+            .finally(() => {
+                if (isMounted) setLoading(false)
+            })
+        return () => {
+            isMounted = false
+        }
     }, [])
 
     return (

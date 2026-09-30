@@ -15,7 +15,6 @@ export default function AssetDetail() {
     const [returnStatus, setReturnStatus] = useState('available')
     const [submitting, setSubmitting] = useState(false)
 
-    // Declared BEFORE useEffect using useCallback
     const loadAsset = useCallback(async () => {
         try {
             const data = await api(`/assets/${id}`)
@@ -28,8 +27,21 @@ export default function AssetDetail() {
     }, [id])
 
     useEffect(() => {
-        loadAsset()
-    }, [loadAsset])
+        let isMounted = true
+        api(`/assets/${id}`)
+            .then((data) => {
+                if (isMounted) setAsset(data)
+            })
+            .catch((err) => {
+                if (isMounted) toast.error(err.message)
+            })
+            .finally(() => {
+                if (isMounted) setLoading(false)
+            })
+        return () => {
+            isMounted = false
+        }
+    }, [id])
 
     const handleReturn = async () => {
         try {
@@ -63,7 +75,7 @@ export default function AssetDetail() {
 
             <div className="bg-white p-6 rounded-xl border border-slate-200/90 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex items-start gap-4">
-                    <div className="p-3.5 bg-blue-50 text-[#1B3C73] rounded-xl border border-blue-100 flex-shrink-0">
+                    <div className="p-3.5 bg-blue-50 text-[#1B3C73] rounded-xl border border-blue-100 shrink-0">
                         <Laptop className="w-7 h-7" />
                     </div>
                     <div>
@@ -87,7 +99,7 @@ export default function AssetDetail() {
             </div>
 
             {activeAssignment ? (
-                <div className="bg-gradient-to-r from-blue-50/70 to-indigo-50/40 p-6 rounded-xl border border-blue-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="bg-linear-to-r from-blue-50/70 to-indigo-50/40 p-6 rounded-xl border border-blue-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-start gap-3.5">
                         <div className="p-2.5 bg-[#1B3C73] text-white rounded-full mt-0.5 shadow-sm">
                             <User className="w-5 h-5" />
@@ -154,7 +166,7 @@ export default function AssetDetail() {
                                 const isActive = record.status === 'assigned'
                                 return (
                                     <div key={record.id} className="relative pl-6">
-                                        <div className={`absolute -left-[9px] top-1.5 w-4 h-4 rounded-full border-2 border-white shadow-sm ${isActive ? 'bg-blue-600 ring-4 ring-blue-100' : 'bg-slate-400'
+                                        <div className={`absolute -left-2.25 top-1.5 w-4 h-4 rounded-full border-2 border-white shadow-sm ${isActive ? 'bg-blue-600 ring-4 ring-blue-100' : 'bg-slate-400'
                                             }`}></div>
 
                                         <div className={`p-4 rounded-lg border ${isActive ? 'bg-blue-50/40 border-blue-200' : 'bg-slate-50/60 border-slate-200/70'

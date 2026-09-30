@@ -11,19 +11,22 @@ export default function Assignments() {
     const [assignments, setAssignments] = useState([])
     const [loading, setLoading] = useState(true)
 
-    const loadAssignments = async () => {
-        try {
-            const data = await api('/assigned-assets')
-            setAssignments(data)
-        } catch (err) {
-            toast.error(err.message)
-        } finally {
-            setLoading(false)
-        }
-    }
 
     useEffect(() => {
-        loadAssignments()
+        let isMounted = true
+        api('/assigned-assets')
+            .then((data) => {
+                if (isMounted) setAssignments(data)
+            })
+            .catch((err) => {
+                if (isMounted) toast.error(err.message)
+            })
+            .finally(() => {
+                if (isMounted) setLoading(false)
+            })
+        return () => {
+            isMounted = false
+        }
     }, [])
 
     return (

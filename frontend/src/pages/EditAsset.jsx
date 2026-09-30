@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { api } from '../api/client.js'
 import Button from '../components/Button.jsx'
@@ -18,24 +18,27 @@ export default function EditAsset() {
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
 
-    const loadAsset = useCallback(async () => {
-        try {
-            const data = await api(`/assets/${id}`)
-            setName(data.name)
-            setType(data.type)
-            setAssetTag(data.asset_tag)
-            setSerialNumber(data.serial_number)
-            setStatus(data.status)
-        } catch (err) {
-            toast.error(err.message)
-        } finally {
-            setLoading(false)
+    useEffect(() => {
+        let isMounted = true
+        api(`/assets/${id}`)
+            .then((data) => {
+                if (!isMounted) return
+                setName(data.name)
+                setType(data.type)
+                setAssetTag(data.asset_tag)
+                setSerialNumber(data.serial_number)
+                setStatus(data.status)
+            })
+            .catch((err) => {
+                if (isMounted) toast.error(err.message)
+            })
+            .finally(() => {
+                if (isMounted) setLoading(false)
+            })
+        return () => {
+            isMounted = false
         }
     }, [id])
-
-    useEffect(() => {
-        loadAsset()
-    }, [loadAsset])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
