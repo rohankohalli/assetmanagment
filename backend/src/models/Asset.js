@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/dbconfig";
 
-const staff = sequelize.define("staff", {
+const Asset = sequelize.define("asset", {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -26,7 +26,7 @@ const staff = sequelize.define("staff", {
         unique: true
     },
     status: {
-        type: DataTypes.ENUM("available", "assigned", "maintenance"),
+        type: DataTypes.ENUM("available", "assigned", "under_repair"),
         allowNull: false
     },
 }, {
@@ -34,4 +34,4 @@ const staff = sequelize.define("staff", {
     updatedAt: false,
 })
 
-export default staff
+export default Asset
