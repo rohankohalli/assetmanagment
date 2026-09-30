@@ -1,11 +1,18 @@
 import express from 'express'
 import sequelize from './config/dbconfig.js'
+import assestRoutes from './routes/asset.routes.js'
+import staffRoutes from './routes/staff.routes.js'
+import assestAssignmentRoutes from './routes/assetAssignment.routes.js'
 
 const app = express()
 const port = process.env.PORT || 8080
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+
+app.use("/api/assets", assestRoutes)
+app.use("/api/staff", staffRoutes)
+app.use("/api/assigned-assets", assestAssignmentRoutes)
 
 const startServer = async () => {
     try {

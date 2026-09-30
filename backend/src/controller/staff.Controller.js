@@ -5,23 +5,23 @@ import Asset from "../models/Asset.js"
 
 export const createStaff = async (req, res) => {
     try {
-        const { name, email, department } = req.body;
+        const { name, email, department } = req.body
 
-        const existing = await staff.findOne({ where: { email: email.trim().toLowerCase() } });
+        const existing = await staff.findOne({ where: { email: email.trim().toLowerCase() } })
         if (existing) {
-            return res.status(409).json({ error: 'Staff email already exists' });
+            return res.status(409).json({ error: 'Staff email already exists' })
         }
 
         const newStaff = await staff.create({
             name: name.trim(),
             email: email.trim().toLowerCase(),
             department: department.trim(),
-        });
+        })
 
-        res.status(201).json(newStaff);
+        res.status(201).json(newStaff)
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Failed to create staff' });
+        console.error(err)
+        res.status(500).json({ error: 'Failed to create staff' })
     }
 }
 
@@ -37,7 +37,7 @@ export const getAllStaff = async (req, res) => {
                 },
             ],
             order: [['name', 'ASC']],
-        });
+        })
 
         const formatted = staffList.map(s => ({
             id: s.id,
@@ -45,12 +45,12 @@ export const getAllStaff = async (req, res) => {
             email: s.email,
             department: s.department,
             assets_held_count: s.assignments ? s.assignments.length : 0,
-        }));
+        }))
 
-        res.json(formatted);
+        res.json(formatted)
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Failed to fetch staff list' });
+        console.error(err)
+        res.status(500).json({ error: 'Failed to fetch staff list' })
     }
 }
 
@@ -65,13 +65,13 @@ export const getStaffById = async (req, res) => {
                     order: [['assigned_date', 'DESC']],
                 },
             ],
-        });
+        })
 
-        if (!staffMember) return res.status(404).json({ error: 'Staff member not found' });
+        if (!staffMember) return res.status(404).json({ error: 'Staff member not found' })
 
         const currently_held = staffMember.assignments
             .filter(a => a.status === 'assigned')
-            .map(a => a.asset);
+            .map(a => a.asset)
 
         res.json({
             id: staffMember.id,
@@ -80,9 +80,9 @@ export const getStaffById = async (req, res) => {
             department: staffMember.department,
             currently_held,
             assignment_history: staffMember.assignments,
-        });
+        })
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Failed to fetch staff profile' });
+        console.error(err)
+        res.status(500).json({ error: 'Failed to fetch staff profile' })
     }
 }

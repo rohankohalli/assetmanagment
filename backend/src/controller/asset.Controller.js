@@ -29,16 +29,16 @@ export const createAsset = async (req, res) => {
 
 export const getAssets = async (req, res) => {
     try {
-        const { status, type, search } = req.query;
-        const where = {};
-        if (status && status !== 'All') where.status = status.toLowerCase();
-        if (type && type !== 'All') where.type = type.toLowerCase();
+        const { status, type, search } = req.query
+        const where = {}
+        if (status && status !== 'All') where.status = status.toLowerCase()
+        if (type && type !== 'All') where.type = type.toLowerCase()
         if (search) {
             where[Op.or] = [
                 { name: { [Op.like]: `%${search}%` } },
                 { asset_tag: { [Op.like]: `%${search}%` } },
                 { serial_number: { [Op.like]: `%${search}%` } },
-            ];
+            ]
         }
         const assets = await Asset.findAll({
             where,
@@ -52,7 +52,7 @@ export const getAssets = async (req, res) => {
                 },
             ],
             order: [['createdAt', 'DESC']],
-        });
+        })
         // Format for frontend
         const formatted = assets.map(a => ({
             id: a.id,
@@ -63,13 +63,13 @@ export const getAssets = async (req, res) => {
             status: a.status,
             current_holder: a.assignments?.[0]?.staff?.name || null,
             holder_department: a.assignments?.[0]?.staff?.department || null,
-        }));
-        res.json(formatted);
+        }))
+        res.json(formatted)
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to fetch assets' });
+        console.error(error)
+        res.status(500).json({ error: 'Failed to fetch assets' })
     }
-};
+}
 
 export const getAssetById = async (req, res) => {
     try {
@@ -82,20 +82,20 @@ export const getAssetById = async (req, res) => {
                     order: [['assigned_date', 'DESC']],
                 },
             ],
-        });
-        if (!asset) return res.status(404).json({ error: 'Asset not found' });
-        res.json(asset);
+        })
+        if (!asset) return res.status(404).json({ error: 'Asset not found' })
+        res.json(asset)
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to fetch asset details' });
+        console.error(error)
+        res.status(500).json({ error: 'Failed to fetch asset details' })
     }
-};
+}
 
 export const updateAsset = async (req, res) => {
     try {
-        const asset = await Asset.findByPk(req.params.id);
-        if (!asset) return res.status(404).json({ error: 'Asset not found' });
-        const { name, type, asset_tag, serial_number, status } = req.body;
+        const asset = await Asset.findByPk(req.params.id)
+        if (!asset) return res.status(404).json({ error: 'Asset not found' })
+        const { name, type, asset_tag, serial_number, status } = req.body
         // Check if new tag/serial conflicts with another asset
         if (asset_tag !== asset.asset_tag || serial_number !== asset.serial_number) {
             const existing = await Asset.findOne({
@@ -103,9 +103,9 @@ export const updateAsset = async (req, res) => {
                     [Op.or]: [{ asset_tag: asset_tag || '' }, { serial_number: serial_number || '' }],
                     id: { [Op.ne]: req.params.id },
                 },
-            });
+            })
             if (existing) {
-                return res.status(409).json({ error: 'Asset tag or serial number already in use by another asset' });
+                return res.status(409).json({ error: 'Asset tag or serial number already in use by another asset' })
             }
         }
         await asset.update({
@@ -114,28 +114,28 @@ export const updateAsset = async (req, res) => {
             asset_tag: asset_tag ?? asset.asset_tag,
             serial_number: serial_number ?? asset.serial_number,
             status: status ? status.toLowerCase() : asset.status,
-        });
-        res.json(asset);
+        })
+        res.json(asset)
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to update asset' });
+        console.error(error)
+        res.status(500).json({ error: 'Failed to update asset' })
     }
-};
+}
 // 5. DELETE /api/assets/:id - Delete asset (only if available)
 export const deleteAsset = async (req, res) => {
     try {
-        const asset = await Asset.findByPk(req.params.id);
-        if (!asset) return res.status(404).json({ error: 'Asset not found' });
+        const asset = await Asset.findByPk(req.params.id)
+        if (!asset) return res.status(404).json({ error: 'Asset not found' })
         if (asset.status !== 'available') {
-            return res.status(400).json({ error: 'Cannot delete an asset that is currently assigned or under repair' });
+            return res.status(400).json({ error: 'Cannot delete an asset that is currently assigned or under repair' })
         }
-        await asset.destroy();
-        res.json({ message: 'Asset deleted successfully' });
+        await asset.destroy()
+        res.json({ message: 'Asset deleted successfully' })
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to delete asset' });
+        console.error(error)
+        res.status(500).json({ error: 'Failed to delete asset' })
     }
-};
+}
 // 6. GET /api/assets/export/csv - CSV data dump
 export const exportAssetsCsv = async (req, res) => {
     try {
@@ -150,7 +150,7 @@ export const exportAssetsCsv = async (req, res) => {
                 },
             ],
             order: [['name', 'ASC']],
-        });
+        })
         const data = assets.map(a => ({
             asset_tag: a.asset_tag,
             name: a.name,
@@ -159,10 +159,10 @@ export const exportAssetsCsv = async (req, res) => {
             status: a.status,
             current_holder: a.assignments?.[0]?.staff?.name || 'N/A',
             department: a.assignments?.[0]?.staff?.department || 'N/A',
-        }));
-        res.json(data);
+        }))
+        res.json(data)
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to export assets' });
+        console.error(error)
+        res.status(500).json({ error: 'Failed to export assets' })
     }
-};
+}
