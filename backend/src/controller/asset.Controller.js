@@ -96,6 +96,7 @@ export const updateAsset = async (req, res) => {
         const asset = await Asset.findByPk(req.params.id)
         if (!asset) return res.status(404).json({ error: 'Asset not found' })
         const { name, type, asset_tag, serial_number, status } = req.body
+
         // Check if new tag/serial conflicts with another asset
         if (asset_tag !== asset.asset_tag || serial_number !== asset.serial_number) {
             const existing = await Asset.findOne({
@@ -121,7 +122,7 @@ export const updateAsset = async (req, res) => {
         res.status(500).json({ error: 'Failed to update asset' })
     }
 }
-// 5. DELETE /api/assets/:id - Delete asset (only if available)
+
 export const deleteAsset = async (req, res) => {
     try {
         const asset = await Asset.findByPk(req.params.id)
@@ -136,7 +137,6 @@ export const deleteAsset = async (req, res) => {
         res.status(500).json({ error: 'Failed to delete asset' })
     }
 }
-// 6. GET /api/assets/export/csv - CSV data dump
 export const exportAssetsCsv = async (req, res) => {
     try {
         const assets = await Asset.findAll({
