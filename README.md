@@ -81,7 +81,15 @@ assetmanagment/
    ```bash
    npm install
    ```
-3. Configure environment variables in `backend/.env`:
+3. Copy the sample environment file to create `.env`:
+   ```bash
+   # macOS / Linux / Bash
+   cp .env.example .env
+
+   # Windows (Cmd / PowerShell)
+   copy .env.example .env
+   ```
+4. Configure environment variables in `backend/.env`:
    ```env
    PORT=8080
    DB_NAME=itam
@@ -91,11 +99,11 @@ assetmanagment/
    DB_PORT=3306
    JWT_SECRET=your_jwt_secret_key
    ```
-4. Create the MySQL database:
+5. Create the MySQL database:
    ```sql
    CREATE DATABASE itam;
    ```
-5. Start the backend server:
+6. Start the backend server:
    ```bash
    npm run dev
    ```
@@ -111,11 +119,19 @@ assetmanagment/
    ```bash
    npm install
    ```
-3. Start the Vite development server:
+3. Copy the sample environment file to create `.env`:
+   ```bash
+   # macOS / Linux / Bash
+   cp .env.example .env
+
+   # Windows (Cmd / PowerShell)
+   copy .env.example .env
+   ```
+4. Start the Vite development server:
    ```bash
    npm run dev
    ```
-4. Open your browser and navigate to `http://localhost:5173`.
+5. Open your browser and navigate to `http://localhost:5173`.
 
 ---
 

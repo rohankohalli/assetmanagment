@@ -97,6 +97,25 @@ export const updateAsset = async (req, res) => {
         if (!asset) return res.status(404).json({ error: 'Asset not found' })
         const { name, type, asset_tag, serial_number, status } = req.body
 
+        if (status) {
+            const newStatus = status.toLowerCase()
+            const activeAssignment = await AssetAssignment.findOne({
+                where: { asset_id: req.params.id, status: 'assigned' }
+            })
+
+            if (activeAssignment && newStatus !== 'assigned') {
+                return res.status(400).json({
+                    error: 'Cannot change status of an asset with an active assignment. Return the asset first.'
+                })
+            }
+
+            if (!activeAssignment && newStatus === 'assigned') {
+                return res.status(400).json({
+                    error: 'Cannot manually set status to assigned without creating an assignment record. Please use the assign asset feature.'
+                })
+            }
+        }
+
         // Check if new tag/serial conflicts with another asset
         if (asset_tag !== asset.asset_tag || serial_number !== asset.serial_number) {
             const existing = await Asset.findOne({

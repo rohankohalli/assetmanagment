@@ -8,7 +8,11 @@ export const assignAsset = async (req, res) => {
     try {
         const { asset_id, staff_id } = req.body
 
-        const assetRecord = await Asset.findByPk(asset_id, { transaction })
+        // Acquire exclusive row lock on the asset record during transaction
+        const assetRecord = await Asset.findByPk(asset_id, {
+            transaction,
+            lock: transaction.LOCK.UPDATE,
+        })
         if (!assetRecord) {
             await transaction.rollback()
             return res.status(404).json({ error: 'Asset not found' })
@@ -22,6 +26,17 @@ export const assignAsset = async (req, res) => {
         if (!staffRecord) {
             await transaction.rollback()
             return res.status(404).json({ error: 'Staff member not found' })
+        }
+
+        // Additional concurrency check for existing active assignment
+        const existingAssignment = await AssetAssignment.findOne({
+            where: { asset_id, status: 'assigned' },
+            transaction,
+            lock: transaction.LOCK.UPDATE,
+        })
+        if (existingAssignment) {
+            await transaction.rollback()
+            return res.status(400).json({ error: 'Asset already has an active assignment' })
         }
 
         const assignment = await AssetAssignment.create({
@@ -51,6 +66,7 @@ export const returnAsset = async (req, res) => {
         const activeAssignment = await AssetAssignment.findOne({
             where: { asset_id: assetId, status: 'assigned' },
             transaction,
+            lock: transaction.LOCK.UPDATE,
         })
 
         if (!activeAssignment) {
@@ -63,8 +79,13 @@ export const returnAsset = async (req, res) => {
             status: 'returned',
         }, { transaction })
 
-        const assetRecord = await Asset.findByPk(assetId, { transaction })
-        await assetRecord.update({ status: return_status }, { transaction })
+        const assetRecord = await Asset.findByPk(assetId, {
+            transaction,
+            lock: transaction.LOCK.UPDATE,
+        })
+        if (assetRecord) {
+            await assetRecord.update({ status: return_status }, { transaction })
+        }
 
         await transaction.commit()
         res.json({ message: 'Asset returned successfully' })
