@@ -32,8 +32,8 @@ export default function Sidebar() {
                             key={item.name}
                             to={item.path}
                             className={`flex items-center px-3 py-2.5 rounded-lg text-xs font-semibold transition-all ${isActive
-                                    ? 'bg-[#2A4F8F] text-white shadow-xs border-l-4 border-[#E8751A]'
-                                    : 'text-gray-200 hover:bg-[#2A4F8F]/60 hover:text-white'
+                                ? 'bg-[#2A4F8F] text-white shadow-xs border-l-4 border-[#E8751A]'
+                                : 'text-gray-200 hover:bg-[#2A4F8F]/60 hover:text-white'
                                 }`}
                         >
                             <Icon className={`w-4 h-4 mr-3 ${isActive ? 'text-[#E8751A]' : 'text-gray-300'}`} />
@@ -52,7 +52,7 @@ export default function Sidebar() {
                     <button
                         onClick={logout}
                         title="Sign Out"
-                        className="p-2 text-gray-300 hover:text-white hover:bg-red-600/80 rounded-lg transition-colors flex-shrink-0"
+                        className="p-2 text-gray-300 hover:text-white hover:bg-red-600/80 rounded-lg transition-colors shrink-0 cursor-pointer"
                     >
                         <LogOut className="w-4 h-4" />
                     </button>

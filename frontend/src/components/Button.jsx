@@ -8,7 +8,7 @@ export default function Button({
     onClick,
     ...props
 }) {
-    const baseStyles = 'inline-flex items-center justify-center px-4 py-2 text-xs font-semibold rounded-lg shadow-sm transition duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed'
+    const baseStyles = 'inline-flex items-center justify-center px-4 py-2 text-xs font-semibold rounded-lg shadow-sm transition duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
 
     const variants = {
         primary: 'bg-[#1B3C73] hover:bg-[#2A4F8F] text-white',
